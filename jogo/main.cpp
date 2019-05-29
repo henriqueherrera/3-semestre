@@ -32,30 +32,23 @@ void setBackGroung() //set a imagem de fundo
 void setGround()
 {
     imgGround = SDL_DisplayFormat(SDL_LoadBMP("ground.bmp"));
-    rectGround.x = 0;
+    rectGround.x = 10;
     rectGround.y = 0;
-    rectGround.w = 640;
+    rectGround.w = 630;
     rectGround.h = 455;
     movGround[0].x = 0;
     movGround[0].y = 460;
-    movGround[1].x = 640;
+    movGround[1].x = 630;
     movGround[1].y = 460;
-    movGround[2].x = 640*2;
+    movGround[2].x = 630*2;
     movGround[2].y = 460;
 
     SDL_SetColorKey(imgGround, SDL_SRCCOLORKEY, SDL_MapRGB(screen->format, 255,255,255));
-    //33bdff
 }
 int runBackGround()
 {
-    mov-=4;
-
-    for(int i= 0; i<3; i++) 
-    {
-        mov_ground[i]-=4;
-    }
+    mov-=1;
     movBackGround[2].x = 2325+mov;
-    movGround[2].x = mov_ground[2];
 
     if(movBackGround[2].x <= -75)
     {
@@ -67,11 +60,33 @@ int runBackGround()
     
     return mov;
 }
+int runGround()
+{
+	mov_ground[0]-=2;
+	mov_ground[1]-=2;
+	mov_ground[2]-=2;
+	movGround[0].x = mov_ground[0];
+	movGround[1].x = mov_ground[1];
+	movGround[2].x = mov_ground[2];
+	if(mov_ground[0] <= -630)
+	{
+		mov_ground[0] = 1270;
+	}
 
+	else if (mov_ground[1] <= -630)
+	{
+		mov_ground[1] = 1270;
+	}
+	
+	else if (mov_ground[2] <= -630)
+	{
+		mov_ground[2] = 1270;
+	}
+	
+}
 void blitScreen()
 {
     SDL_FillRect(screen, &screen->clip_rect, color2);
-    
     SDL_BlitSurface(imgBackGroung[0],&rectBackGroung[0], screen, &movBackGround[0]);
     SDL_BlitSurface(imgBackGroung[0],&rectBackGroung[0], screen, &movBackGround[2]);
     SDL_BlitSurface(imgBackGroung[1],&rectBackGroung[1], screen, &movBackGround[1]);
@@ -115,7 +130,7 @@ int main (int argc, char ** argcv)
     //SDL_SetColorKey(image, SDL_SRCCOLORKEY, SDL_MapRGB(screen->format, #00BFFF, #00BFFF, #00BFFF));
     
     SDL_Color color3 = {0,0,0};
-    text = TTF_RenderText_Solid(font,"Hello world",{210,40,89});
+    text = TTF_RenderText_Solid(font,"Joguinho",{210,40,89});
     
     while(running)
     {
@@ -201,15 +216,12 @@ int main (int argc, char ** argcv)
             rect.x++;
         }
 
-        movBackGround[0].x = runBackGround();
-        movBackGround[1].x = 1200+movBackGround[0].x;
-        movGround[0].x = mov_ground[0];
-        movGround[1].x = mov_ground[1];
+	blitScreen();
+	runGround(); 
+	movBackGround[0].x = runBackGround();
         
-        cout<<"\r"<<movGround[2].x<<endl;
-        blitScreen();
-        
-        //SDL_FillRect(screen, &rect, color);
+    	movBackGround[1].x = 1200+movBackGround[0].x;
+	//SDL_FillRect(screen, &rect, color);
 
         
 
