@@ -1,4 +1,5 @@
 #include<iostream>
+#include <SDL/SDL_image.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
 
@@ -8,7 +9,7 @@ SDL_Rect rect, movBackGround[3], movGround[3];
 SDL_Rect rectBackGroung[2], rectGround;
 Uint32 color;
 Uint32 color2;
-int mov = 0, mov_ground[3] = {0,640,1280};
+int mov = 0, mov_ground[3] = {0,620,1240};
 void setBackGroung() //set a imagem de fundo
 {
     //load image
@@ -34,13 +35,13 @@ void setGround()
     imgGround = SDL_DisplayFormat(SDL_LoadBMP("ground.bmp"));
     rectGround.x = 10;
     rectGround.y = 0;
-    rectGround.w = 630;
-    rectGround.h = 455;
+    rectGround.w = 620;
+    rectGround.h = 450;
     movGround[0].x = 0;
     movGround[0].y = 460;
-    movGround[1].x = 630;
+    movGround[1].x = 640;
     movGround[1].y = 460;
-    movGround[2].x = 630*2;
+    movGround[2].x = 640*2;
     movGround[2].y = 460;
 
     SDL_SetColorKey(imgGround, SDL_SRCCOLORKEY, SDL_MapRGB(screen->format, 255,255,255));
@@ -57,32 +58,33 @@ int runBackGround()
         
     }
 
-    
     return mov;
 }
 int runGround()
 {
-	mov_ground[0]-=2;
-	mov_ground[1]-=2;
-	mov_ground[2]-=2;
+	mov_ground[0]-=1;
+	mov_ground[1]-=1;
+	mov_ground[2]-=1;
+	
 	movGround[0].x = mov_ground[0];
 	movGround[1].x = mov_ground[1];
 	movGround[2].x = mov_ground[2];
-	if(mov_ground[0] <= -630)
+	
+	if(mov_ground[0] <= -620)
 	{
-		mov_ground[0] = 1270;
+		mov_ground[0] = 1240;
 	}
 
-	else if (mov_ground[1] <= -630)
+	else if (mov_ground[1] <= -620)
 	{
-		mov_ground[1] = 1270;
+		mov_ground[1] = 1240;
 	}
 	
-	else if (mov_ground[2] <= -630)
+	else if (mov_ground[2] <= -620)
 	{
-		mov_ground[2] = 1270;
+		mov_ground[2] = 1240;
 	}
-	
+	cout<<mov_ground[2]<<endl;
 }
 void blitScreen()
 {
@@ -108,7 +110,7 @@ int main (int argc, char ** argcv)
     
     bool running = true;
 
-    const int FPS = 30;
+    const int FPS = 60;
 
     bool b[4] = { 0, 0, 0, 0 };
     
