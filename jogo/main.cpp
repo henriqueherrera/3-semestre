@@ -4,8 +4,8 @@
 #include <SDL/SDL_ttf.h>
 
 using namespace std;
-SDL_Surface *screen, *imgBackGroung[2], *text, *imgGround;
-SDL_Rect rect, movBackGround[3], movGround[3];
+SDL_Surface *screen, *imgBackGroung[2], *text, *imgGround, *imgPerson = NULL;
+SDL_Rect rect, movBackGround[3], movGround[3], rectPerson;
 SDL_Rect rectBackGroung[2], rectGround;
 Uint32 color;
 Uint32 color2;
@@ -29,7 +29,16 @@ void setBackGroung() //set a imagem de fundo
     movBackGround[2].x = 1200*2;
     movBackGround[2].y = 0;
 }
+void setPerson()
+{
 
+	imgPerson = IMG_Load("personagem.png");
+	rectPerson.x = 0;
+	rectPerson.y = 916;
+	rectPerson.w = 102;
+	rectPerson.h = 284;
+
+}
 void setGround()
 {
     imgGround = SDL_DisplayFormat(SDL_LoadBMP("ground.bmp"));
@@ -94,6 +103,7 @@ void blitScreen()
     SDL_BlitSurface(imgBackGroung[1],&rectBackGroung[1], screen, &movBackGround[1]);
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[0]);
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[1]);
+    SDL_BlitSurface(imgPerson,&rectPerson, screen, &rect);
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[2]);
     SDL_BlitSurface(text,NULL, screen, NULL);
     SDL_Flip(screen);
@@ -124,7 +134,7 @@ int main (int argc, char ** argcv)
     rect.h = 200;
 
     
-
+	setPerson();
     setBackGroung();
     setGround();
     //tira o fundo que esta de determinada cor;
