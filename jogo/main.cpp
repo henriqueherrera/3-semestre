@@ -2,14 +2,31 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 SDL_Surface *screen, *imgBackGroung[2], *text, *imgGround, *imgPerson = NULL;
-SDL_Rect rect, movBackGround[3], movGround[3], rectPerson;
-SDL_Rect rectBackGroung[2], rectGround;
+SDL_Rect rect, movBackGround[3], movGround[3];
+SDL_Rect rectBackGroung[2], rectGround, rectPerson[9];
 Uint32 color;
 Uint32 color2;
 int mov = 0, mov_ground[3] = {0,620,1240};
+int animacaoPerson = 0;
+void delayBlitPerson()
+{
+	while( !close )
+        {
+                std::this_thread::sleep_for(chrono::milliseconds(50));
+		if( animacaoPerson+1 == 10)
+		{
+			animacaoPerson = 0;
+		}
+		animacaoPerson++;
+		
+
+        }
+}
 void setBackGroung() //set a imagem de fundo
 {
     //load image
@@ -18,7 +35,17 @@ void setBackGroung() //set a imagem de fundo
     for(int i = 1; i<= 2; i++)
     {
         rectBackGroung[i-1].w = 1200;
-        rectBackGroung[i-1].h = 600;
+       le( !close )
+        {
+                std::this_thread::sleep_for(chrono::milliseconds(50));
+		count_mov_personagem++;
+		if(count_mov_personagem == 15 )
+               	{
+                     	count_mov_personagem = 0;
+              	}
+        	walk.rect.y +=5; 
+
+        } rectBackGroung[i-1].h = 600;
         rectBackGroung[i-1].x = rect.x;
         rectBackGroung[i-1].y = rect.y;
     }
@@ -31,13 +58,18 @@ void setBackGroung() //set a imagem de fundo
 }
 void setPerson()
 {
-
+	int posX[10] = {4,134,254,369,479,609,729,859,979,1079};
+	int posW[10] = {101,96,96,96,116,100,96,96,96,116};
+	
 	imgPerson = IMG_Load("personagem.png");
-	rectPerson.x = 0;
-	rectPerson.y = 916;
-	rectPerson.w = 102;
-	rectPerson.h = 284;
-
+	
+	for(int i = 0; i<10; i++)
+	{
+		rectPerson[i].y = 916; 
+		rectPerson[i].x = posX[i];
+		rectPerson[i].h = 284;
+		rectPerson[i].w = posW[i];
+	}
 }
 void setGround()
 {
@@ -103,7 +135,8 @@ void blitScreen()
     SDL_BlitSurface(imgBackGroung[1],&rectBackGroung[1], screen, &movBackGround[1]);
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[0]);
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[1]);
-    SDL_BlitSurface(imgPerson,&rectPerson, screen, &rect);
+
+    SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &rect);
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[2]);
     SDL_BlitSurface(text,NULL, screen, NULL);
     SDL_Flip(screen);
@@ -133,7 +166,7 @@ int main (int argc, char ** argcv)
     rect.w = 100;
     rect.h = 200;
 
-    
+   thread = (delayBlitPerson 
 	setPerson();
     setBackGroung();
     setGround();
