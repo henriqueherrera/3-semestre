@@ -12,17 +12,19 @@ SDL_Rect rectBackGroung[2], rectGround, rectPerson[9];
 Uint32 color;
 Uint32 color2;
 int mov = 0, mov_ground[3] = {0,620,1240};
-int animacaoPerson = 0;
+int animaPerson = 0;
+
+bool running = true;
 void delayBlitPerson()
 {
-	while( !close )
+	while( running )
         {
-                std::this_thread::sleep_for(chrono::milliseconds(50));
-		if( animacaoPerson+1 == 10)
+                std::this_thread::sleep_for(chrono::milliseconds(200));
+		if( animaPerson+1 == 10)
 		{
-			animacaoPerson = 0;
+			animaPerson = 0;
 		}
-		animacaoPerson++;
+		animaPerson++;
 		
 
         }
@@ -34,26 +36,16 @@ void setBackGroung() //set a imagem de fundo
     imgBackGroung[1] = SDL_DisplayFormat(SDL_LoadBMP("fundo2.bmp"));
     for(int i = 1; i<= 2; i++)
     {
-        rectBackGroung[i-1].w = 1200;
-       le( !close )
-        {
-                std::this_thread::sleep_for(chrono::milliseconds(50));
-		count_mov_personagem++;
-		if(count_mov_personagem == 15 )
-               	{
-                     	count_mov_personagem = 0;
-              	}
-        	walk.rect.y +=5; 
-
-        } rectBackGroung[i-1].h = 600;
+        rectBackGroung[i-1].w = 1240;
+	rectBackGroung[i-1].h = 620;
         rectBackGroung[i-1].x = rect.x;
         rectBackGroung[i-1].y = rect.y;
     }
     movBackGround[0].x = 0;
     movBackGround[0].y = 0;
-    movBackGround[1].x = 1200;
+    movBackGround[1].x = 620;
     movBackGround[1].y = 0;
-    movBackGround[2].x = 1200*2;
+    movBackGround[2].x = 620*2;
     movBackGround[2].y = 0;
 }
 void setPerson()
@@ -131,12 +123,14 @@ void blitScreen()
 {
     SDL_FillRect(screen, &screen->clip_rect, color2);
     SDL_BlitSurface(imgBackGroung[0],&rectBackGroung[0], screen, &movBackGround[0]);
+    SDL_BlitSurface(imgBackGroung[1],&rectBackGroung[0], screen, &movBackGround[1]);
     SDL_BlitSurface(imgBackGroung[0],&rectBackGroung[0], screen, &movBackGround[2]);
-    SDL_BlitSurface(imgBackGroung[1],&rectBackGroung[1], screen, &movBackGround[1]);
+    SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &rect);
+
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[0]);
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[1]);
 
-    SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &rect);
+   // SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &rect);
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[2]);
     SDL_BlitSurface(text,NULL, screen, NULL);
     SDL_Flip(screen);
@@ -151,7 +145,7 @@ int main (int argc, char ** argcv)
     
     screen = SDL_SetVideoMode(800,600,32,SDL_SWSURFACE);
     
-    bool running = true;
+		SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &rect);
 
     const int FPS = 60;
 
@@ -166,7 +160,7 @@ int main (int argc, char ** argcv)
     rect.w = 100;
     rect.h = 200;
 
-   thread = (delayBlitPerson 
+	thread  delay(delayBlitPerson);
 	setPerson();
     setBackGroung();
     setGround();
@@ -253,6 +247,7 @@ int main (int argc, char ** argcv)
         if(b[2])
         {
             rect.x--;
+		SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &rect);
             
         }
 
@@ -280,5 +275,6 @@ int main (int argc, char ** argcv)
     TTF_CloseFont(font);
     SDL_Quit();
 
+    delay.join(); 
     return 0;
 }
