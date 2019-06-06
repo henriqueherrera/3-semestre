@@ -8,7 +8,7 @@
 using namespace std;
 SDL_Surface *screen, *imgBackGroung[2], *text, *imgGround, *imgPerson = NULL;
 SDL_Rect rect, movBackGround[3], movGround[3];
-SDL_Rect rectBackGroung[2], rectGround, rectPerson[9];
+SDL_Rect rectBackGroung[2], rectGround, rectPerson[10], movPerson;
 Uint32 color;
 Uint32 color2;
 int mov = 0, mov_ground[3] = {0,620,1240};
@@ -19,7 +19,7 @@ void delayBlitPerson()
 {
 	while( running )
         {
-                std::this_thread::sleep_for(chrono::milliseconds(200));
+                std::this_thread::sleep_for(chrono::milliseconds(125));
 		if( animaPerson+1 == 10)
 		{
 			animaPerson = 0;
@@ -62,6 +62,8 @@ void setPerson()
 		rectPerson[i].h = 284;
 		rectPerson[i].w = posW[i];
 	}
+	movPerson.x = 200;
+	movPerson.y = 390;
 }
 void setGround()
 {
@@ -117,7 +119,7 @@ int runGround()
 	{
 		mov_ground[2] = 1240;
 	}
-	cout<<mov_ground[2]<<endl;
+	//cout<<mov_ground[2]<<endl;
 }
 void blitScreen()
 {
@@ -125,7 +127,6 @@ void blitScreen()
     SDL_BlitSurface(imgBackGroung[0],&rectBackGroung[0], screen, &movBackGround[0]);
     SDL_BlitSurface(imgBackGroung[1],&rectBackGroung[0], screen, &movBackGround[1]);
     SDL_BlitSurface(imgBackGroung[0],&rectBackGroung[0], screen, &movBackGround[2]);
-    SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &rect);
 
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[0]);
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[1]);
@@ -133,6 +134,8 @@ void blitScreen()
    // SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &rect);
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[2]);
     SDL_BlitSurface(text,NULL, screen, NULL);
+    
+    SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &movPerson);
     SDL_Flip(screen);
 }
 
@@ -167,10 +170,10 @@ int main (int argc, char ** argcv)
     //tira o fundo que esta de determinada cor;
     
     //SDL_SetColorKey(image, SDL_SRCCOLORKEY, SDL_MapRGB(screen->format, #00BFFF, #00BFFF, #00BFFF));
-    
+    bool right = false;
     SDL_Color color3 = {0,0,0};
     text = TTF_RenderText_Solid(font,"Joguinho",{210,40,89});
-    
+	bool leftPressed = false, rightPressed = false; 
     while(running)
     {
         start = SDL_GetTicks();
@@ -179,69 +182,46 @@ int main (int argc, char ** argcv)
 
         while(SDL_PollEvent(&event))
         {
+		if(event.key.keysym.sym == SDLK_d ||right)
+		{
+			right = true;
+			cout<<"aaaaaaaaaaaaaaaa"<<endl;
+			movPerson.x++;
+			if( SDL_KEYDOWN == event.type)
+			{
+				right = false;
+			}
+
+
+		}
             switch(event.type)
             {
                 case SDL_QUIT:
                     running = false;
                     break;
 
-                case SDL_KEYDOWN:
-                    switch (event.key.keysym.sym)
-                    {
-                        case SDLK_UP:
-                            b[0] = 1;
-                            break;
-                        
-                        case SDLK_DOWN:
-                            b[1] = 1;
-                            break;
+  		case SDL_KEYDOWN:
+                	if(event.key.keysym.sym == SDLK_LEFT)
+                    		leftPressed = true;
+                	else if (event.key.keysym.sym == SDLK_RIGHT)
+                    		rightPressed = true;
+                	break;
+ 
+            //Testamos se a tecla foi solta
+            	case SDL_KEYUP:
+                	if(event.key.keysym.sym == SDLK_LEFT)
+                    		leftPressed = false;
+                	else if (event.key.keysym.sym == SDLK_RIGHT)
+                    		rightPressed = false;
+                	break;
+		default:
+			break;
+	   }	     
+	}
 
-                        case SDLK_LEFT:
-                            b[2] = 1;
-                            break;
-                        
-                        case SDLK_RIGHT:
-                            b[3] = 1;
-                            break;
-                    default:
-                        break;
-                    }
-                    break;
-
-                case SDL_KEYUP:
-                    switch (event.key.keysym.sym)
-                    {
-                        case SDLK_UP:
-                            b[0] = 0;
-                            break;
-                        
-                        case SDLK_DOWN:
-                            b[1] = 0;
-                            break;
-
-                        case SDLK_LEFT:
-                            b[2] = 0;
-                            break;
-                        
-                        case SDLK_RIGHT:
-                            b[3] = 0;
-                            break;
-                    default:
-                        break;
-                    }
-                    break;
-            }
-            break;
-        } 
-        //logic e render
-        if(b[0])
+        if(rightPressed)
         {
-            rect.y--;
-        }
-
-        if(b[1])
-        {
-            rect.y++;
+            movPerson.x++;
         }
         
         if(b[2])
