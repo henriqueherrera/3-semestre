@@ -6,6 +6,7 @@
 #include <thread>
 
 using namespace std;
+
 SDL_Surface *screen, *imgBackGroung[2], *text, *imgGround, *imgPerson = NULL;
 SDL_Rect rect, movBackGround[3], movGround[3];
 SDL_Rect rectBackGroung[2], rectGround, rectPerson[10], movPerson;
@@ -24,7 +25,7 @@ void delayBlitPerson()
 		{
 			animaPerson = 0;
 		}
-		animaPerson++;
+		//animaPerson++;
 		
 
         }
@@ -50,20 +51,21 @@ void setBackGroung() //set a imagem de fundo
 }
 void setPerson()
 {
-	int posX[10] = {4,134,254,369,479,609,729,859,979,1079};
-	int posW[10] = {101,96,96,96,116,100,96,96,96,116};
-	
-	imgPerson = IMG_Load("personagem.png");
-	
-	for(int i = 0; i<10; i++)
-	{
-		rectPerson[i].y = 916; 
-		rectPerson[i].x = posX[i];
-		rectPerson[i].h = 284;
-		rectPerson[i].w = posW[i];
-	}
+	imgPerson = IMG_Load("./drag.png");
+	rectPerson[0].x  = 297;
+	rectPerson[0].y  = 178;
+	rectPerson[0].h  = 57;
+	rectPerson[0].w  = 182;
+	rectPerson[1].x  = 297;
+	rectPerson[1].y  = 178;
+	rectPerson[1].h  = 57;
+	rectPerson[1].w  = 182;
+	rectPerson[2].x  = 297;
+	rectPerson[2].y  = 178;
+	rectPerson[2].h  = 57;
+	rectPerson[2].w  = 182;
 	movPerson.x = 200;
-	movPerson.y = 390;
+	movPerson.y = 100;
 }
 void setGround()
 {
@@ -135,7 +137,7 @@ void blitScreen()
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[2]);
     SDL_BlitSurface(text,NULL, screen, NULL);
     
-    SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &movPerson);
+    SDL_BlitSurface(imgPerson,&rectPerson[0], screen, &movPerson);
     SDL_Flip(screen);
 }
 
@@ -171,9 +173,10 @@ int main (int argc, char ** argcv)
     
     //SDL_SetColorKey(image, SDL_SRCCOLORKEY, SDL_MapRGB(screen->format, #00BFFF, #00BFFF, #00BFFF));
     bool right = false;
+    int gravity = -1;
     SDL_Color color3 = {0,0,0};
     text = TTF_RenderText_Solid(font,"Joguinho",{210,40,89});
-	bool leftPressed = false, rightPressed = false; 
+    bool leftPressed = false, rightPressed = false, saltPressed = false; 
     while(running)
     {
         start = SDL_GetTicks();
@@ -182,18 +185,6 @@ int main (int argc, char ** argcv)
 
         while(SDL_PollEvent(&event))
         {
-		if(event.key.keysym.sym == SDLK_d ||right)
-		{
-			right = true;
-			cout<<"aaaaaaaaaaaaaaaa"<<endl;
-			movPerson.x++;
-			if( SDL_KEYDOWN == event.type)
-			{
-				right = false;
-			}
-
-
-		}
             switch(event.type)
             {
                 case SDL_QUIT:
@@ -205,7 +196,9 @@ int main (int argc, char ** argcv)
                     		leftPressed = true;
                 	else if (event.key.keysym.sym == SDLK_RIGHT)
                     		rightPressed = true;
-                	break;
+			else if (event.key.keysym.sym == SDLK_SPACE && movPerson.y == 405)
+				saltPressed = true;
+			break;
  
             //Testamos se a tecla foi solta
             	case SDL_KEYUP:
@@ -213,41 +206,50 @@ int main (int argc, char ** argcv)
                     		leftPressed = false;
                 	else if (event.key.keysym.sym == SDLK_RIGHT)
                     		rightPressed = false;
+			else if (event.key.keysym.sym == SDLK_SPACE)
+				saltPressed = false;
                 	break;
 		default:
 			break;
 	   }	     
 	}
-
+	
+	
         if(rightPressed)
         {
-            movPerson.x++;
-        }
-        
-        if(b[2])
-        {
-            rect.x--;
-		SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &rect);
-            
+		movPerson.x++;
         }
 
-        if(b[3])
-        {
-            rect.x++;
-        }
+        if(leftPressed)
+	{
+		movPerson.x--;
+	}
 
+	if(saltPressed)
+	{
+		movPerson.y-=5;
+	}
+	cout<<saltPressed<<endl;
+	if(movPerson.y >= 405) 
+	{
+		movPerson.y = 405;
+	}
+	else
+	{
+		movPerson.y-=gravity;
+	}
 	blitScreen();
 	runGround(); 
 	movBackGround[0].x = runBackGround();
         
-    	movBackGround[1].x = 1200+movBackGround[0].x;
+    	movBackGround[1].x = 1240+movBackGround[0].x;
 	//SDL_FillRect(screen, &rect, color);
 
         
 
-        if( 1000/FPS > SDL_GetTicks()-start) 
+        if( 500/FPS > SDL_GetTicks()-start) 
         {
-                SDL_Delay(1000/FPS-(SDL_GetTicks()-start));
+                SDL_Delay(500/FPS-(SDL_GetTicks()-start));
         }
     }
     SDL_FreeSurface(text);
