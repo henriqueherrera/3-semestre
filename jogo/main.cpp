@@ -9,7 +9,7 @@ using namespace std;
 
 SDL_Surface *screen, *imgBackGroung[2], *text, *imgGround, *imgPerson = NULL;
 SDL_Rect rect, movBackGround[3], movGround[3];
-SDL_Rect rectBackGroung[2], rectGround, rectPerson[10], movPerson;
+SDL_Rect rectBackGroung[2], rectGround, rectPerson[3], movPerson;
 Uint32 color;
 Uint32 color2;
 int mov = 0, mov_ground[3] = {0,620,1240};
@@ -20,12 +20,13 @@ void delayBlitPerson()
 {
 	while( running )
         {
-                std::this_thread::sleep_for(chrono::milliseconds(125));
-		if( animaPerson+1 == 10)
+                std::this_thread::sleep_for(chrono::milliseconds(150));
+		animaPerson++;
+		if( animaPerson == 3)
 		{
 			animaPerson = 0;
 		}
-		//animaPerson++;
+		cout<<animaPerson<<endl;
 		
 
         }
@@ -52,16 +53,16 @@ void setBackGroung() //set a imagem de fundo
 void setPerson()
 {
 	imgPerson = IMG_Load("./drag.png");
-	rectPerson[0].x  = 297;
-	rectPerson[0].y  = 178;
-	rectPerson[0].h  = 57;
-	rectPerson[0].w  = 182;
-	rectPerson[1].x  = 297;
-	rectPerson[1].y  = 178;
-	rectPerson[1].h  = 57;
-	rectPerson[1].w  = 182;
+	rectPerson[0].x  = 8;
+	rectPerson[0].y  = 134;
+	rectPerson[0].h  = 123;
+	rectPerson[0].w  = 112;
+	rectPerson[1].x  = 153;
+	rectPerson[1].y  = 163;
+	rectPerson[1].h  = 60;
+	rectPerson[1].w  = 112;
 	rectPerson[2].x  = 297;
-	rectPerson[2].y  = 178;
+	rectPerson[2].y  = 168;
 	rectPerson[2].h  = 57;
 	rectPerson[2].w  = 182;
 	movPerson.x = 200;
@@ -137,7 +138,7 @@ void blitScreen()
     SDL_BlitSurface(imgGround,&rectGround, screen, &movGround[2]);
     SDL_BlitSurface(text,NULL, screen, NULL);
     
-    SDL_BlitSurface(imgPerson,&rectPerson[0], screen, &movPerson);
+    SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &movPerson);
     SDL_Flip(screen);
 }
 
@@ -229,7 +230,7 @@ int main (int argc, char ** argcv)
 	{
 		movPerson.y-=5;
 	}
-	cout<<saltPressed<<endl;
+//	cout<<saltPressed<<endl;
 	if(movPerson.y >= 405) 
 	{
 		movPerson.y = 405;
