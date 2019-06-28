@@ -98,12 +98,12 @@ void setPerson() {
 void blitScreen() {
   SDL_FillRect(screen, &screen->clip_rect, color2);
   SDL_BlitSurface(imgBackGroung[0],&rectBackGroung[0], screen, &movBackGround[0]);
-	SDL_BlitSurface(imgBackGroung[1],&rectBackGroung[0], screen, &movBackGround[1]);
-	SDL_BlitSurface(imgFly,&rectFly[animaFly], screen, &movFly);
+  SDL_BlitSurface(imgBackGroung[1],&rectBackGroung[0], screen, &movBackGround[1]);
+  SDL_BlitSurface(imgFly,&rectFly[animaFly], screen, &movFly);
   SDL_BlitSurface(imgPerson,&rectPerson[animaPerson], screen, &movPerson); 
-  
-	SDL_BlitSurface(placar, NULL, screen, &rectPonto);
-	SDL_Flip(screen);
+
+  SDL_BlitSurface(placar, NULL, screen, &rectPonto);
+  SDL_Flip(screen);
 }
 
 string gameOverTxt(int score) {
@@ -138,90 +138,92 @@ int main (int argc, char ** argcv) {
   SDL_Init(SDL_INIT_EVERYTHING);
   TTF_Init();
   TTF_Font *font = TTF_OpenFont("air.TTF",32);
+  
   screen = SDL_SetVideoMode(800,600,32,SDL_SWSURFACE);
-  const int FPS = 60;
+  
+ 
   Uint32 start; //int de 32bits
   color = SDL_MapRGB(screen->format, 0xff, 0xff, 0xff);
   color2 = SDL_MapRGB(screen->format, 0x00, 0x00, 0x00);
-	thread  delay(delayBlitPerson);
+  thread  delay(delayBlitPerson);
   bool right = false;
-	int sort = 1;
-	int score =0;
-	string pontos = "Pontos: 0";
+  int sort = 1;
+  int score =0;
+  const int FPS = 60;
+  string pontos = "Pontos: 0";
   placar = TTF_RenderText_Solid(font, pontos.c_str(), {210,40,89});
   bool leftPressed = false, rightPressed = false, saltPressed = false; 
   setGame();
-	while(running){
-        start = SDL_GetTicks();
-        
-        SDL_Event event;
-
-        while(SDL_PollEvent(&event)){
-            switch(event.type){
-                case SDL_QUIT:
-                    running = false;
-                    break;
-
-  				case SDL_KEYDOWN:
-                	if(event.key.keysym.sym == SDLK_LEFT)
-                    	leftPressed = true;
-                	else if (event.key.keysym.sym == SDLK_RIGHT)
-                    	rightPressed = true;
-					else if (event.key.keysym.sym == SDLK_SPACE)
-						saltPressed = true;
-					cout<<event.key.keysym.sym<<endl;
-					break;
+  
+  while(running) {
+    start = SDL_GetTicks();
+    SDL_Event event;
+    
+    while(SDL_PollEvent(&event)){
+      switch(event.type){
+	
+	case SDL_QUIT:
+	  running = false;
+          break;
+	
+	case SDL_KEYDOWN:
+          if(event.key.keysym.sym == SDLK_LEFT)
+	    leftPressed = true;
+	  else if (event.key.keysym.sym == SDLK_RIGHT)
+            rightPressed = true;
+	  else if (event.key.keysym.sym == SDLK_SPACE)
+	    saltPressed = true;
+	  break;
 		
-             	case SDL_KEYUP:
-                	if(event.key.keysym.sym == SDLK_LEFT)
-                    		leftPressed = false;
-                	else if (event.key.keysym.sym == SDLK_RIGHT)
-                    		rightPressed = false;
-					else if (event.key.keysym.sym == SDLK_SPACE)
-						saltPressed = false;
-                		break;
-				default:
-					break;
-	   		}	     
-		}
+        case SDL_KEYUP:
+	  if(event.key.keysym.sym == SDLK_LEFT)
+	    leftPressed = false;
+          else if (event.key.keysym.sym == SDLK_RIGHT)
+	    rightPressed = false;
+	  else if (event.key.keysym.sym == SDLK_SPACE)
+	    saltPressed = false;
+          break;
+
+	default:
+	  break;
+      }	     
+    }
 		
-		if((movPerson.y >= movFly.y && movPerson.y <= movFly.y+56) && (movPerson.x+112>= movFly.x  && movPerson.x+112<= movFly.x+58)) {
-			gameOver = true;
-		}else
-		blitScreen();
-		mov();
-		if( 500/FPS > SDL_GetTicks()-start) {
-			SDL_Delay(500/FPS-(SDL_GetTicks()-start));
-		}
-		if(!gameOver) {
+    if((movPerson.y >= movFly.y && movPerson.y <= movFly.y+56) && (movPerson.x+112>= movFly.x  && movPerson.x+112<= movFly.x+58)) gameOver = true;
+    
+    blitScreen();
+    
+    mov();
+    
+    if( 500/FPS > SDL_GetTicks()-start) SDL_Delay(500/FPS-(SDL_GetTicks()-start));
+    
+      if(!gameOver) {
+	fly-=sort;
+	movFly.x = fly;
+	if (fly <= -58) {
+	  score++;
+	  fly = 810;
+	  movFly.y = rand()%500;
+	  sort = rand()%9+1;
+	  pontos = "Pontos: "+to_string(score);
+	  cout<<pontos<<endl;
+	  placar = TTF_RenderText_Solid(font, pontos.c_str(), {210,40,89});
+	}
+	if( movFly.y> movPerson.y){
+	  movFly.y--;
+	} else {
+	  movFly.y++;
+	}		
+	if(saltPressed){
+	  movPerson.y-=5;
+	}
+	movPerson.y++;
+      } else {
+	cout<<gameOverTxt(score)<<endl;
+	placar = TTF_RenderText_Solid(font,"me mata",{210,40,89});
+      }
 
-			fly-=sort;
-			movFly.x = fly;
-			if (fly <= -58) {
-				score++;
-				fly = 810;
-				movFly.y = rand()%500;
-				sort = rand()%9+1;
-				pontos = "Pontos: "+to_string(score);
-				cout<<pontos<<endl;
-				placar = TTF_RenderText_Solid(font, pontos.c_str(), {210,40,89});
-			}
-			if( movFly.y> movPerson.y){
-				movFly.y--;
-			}else{
-				movFly.y++;
-			}		
-			if(saltPressed){
-				movPerson.y-=5;
-			}
-			movPerson.y++;
-				
-		}else{
-			cout<<gameOverTxt(score)<<endl;
-			placar = TTF_RenderText_Solid(font,"me mata",{210,40,89});
-		}
-
-	} 
+  } 
   SDL_FreeSurface(text);
   SDL_FreeSurface(imgBackGroung[0]);
   TTF_CloseFont(font);
